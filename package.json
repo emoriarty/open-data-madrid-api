@@ -1,0 +1,65 @@
+{
+  "name": "open-data-madrid-swagger",
+  "version": "0.0.1",
+  "private": true,
+  "description": "New Swagger API Project",
+  "keywords": [],
+  "author": "Enrique Moriarty",
+  "license": "ISC",
+  "main": "app.js",
+  "dependencies": {
+    "cors": "^2.8.1",
+    "express": "^4.12.3",
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.17.2",
+    "normalizr": "^3.0.0",
+    "swagger": "^0.7.5",
+    "swagger-express-mw": "^0.1.0",
+    "xml2js": "^0.4.17"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-eslint": "^7.1.1",
+    "babel-preset-latest": "^6.16.0",
+    "babel-preset-stage-2": "^6.18.0",
+    "babel-register": "^6.18.0",
+    "chai": "^3.5.0",
+    "chai-as-promised": "^6.0.0",
+    "eslint": "^3.13.0",
+    "eslint-config-hapi": "^10.0.0",
+    "eslint-plugin-hapi": "^4.0.0",
+    "fetch-mock": "^5.8.0",
+    "mocha": "^3.2.0",
+    "nodemon": "^1.11.0",
+    "should": "^11.1.2",
+    "supertest": "^2.0.1"
+  },
+  "babel": {
+    "presets": [
+      "latest",
+      "stage-2"
+    ]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "hapi",
+    "env": {
+      "node": true
+    },
+    "rules": {
+      "indent": [
+        "error",
+        2
+      ]
+    }
+  },
+  "scripts": {
+    "babel-node": "babel-node ",
+    "dashboard": "nodejs-dashboard npm run babel-node ./app.js",
+    "dev": "nodemon --exec npm run babel-node  -- ./app.js localhost 8000",
+    "lint": "eslint ./src/**/*.js",
+    "start": "npm run babel-node ./app.js localhost 8000",
+    "mock": "./node_modules/swagger/bin/swagger.js project start -m ./app.js",
+    "test": "./node_modules/swagger/bin/swagger.js project test"
+  }
+}

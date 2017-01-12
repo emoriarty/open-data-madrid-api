@@ -1,0 +1,176 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Madrid Catalog Open Data
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      description: This endpoint returns the default catalog from Madrid Open Data
+      operationId: GetDefaultCatalog
+      parameters: []
+      responses:
+        200:
+          description: Default catalog
+          schema:
+            $ref: "#/definitions/Catalog"
+      x-swagger-router-controller: GetDefaultCatalog
+  /catalogs:
+    get:
+      description: This endpoint returns all catalogs
+      operationId: GetCatalogs
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Catalog response
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Catalog"
+          headers:
+            last-modified:
+              type: string
+              description: The date/time that a pet was last modified
+      x-swagger-router-controller: GetCatalogs
+  /catalog-items:
+    get:
+      description: This endpoint returns all catalogs items
+      operationId: GetCatalogItems
+      produces:
+      - application/json
+      responses:
+        200:
+          description: Catalog response
+          schema:
+            $ref: "#/definitions/CatalogItems"
+          headers:
+            last-modified:
+              type: string
+              description: The date/time that a pet was last modified
+      x-swagger-router-controller: GetCatalogItems
+  /catalog-item/{id}:
+    get:
+      description: This endpoint returns all catalogs items
+      operationId: GetCatalogItem
+      produces:
+      - application/json
+      parameters:
+      - name: id
+        in: path
+        description: ID of the todo to get
+        required: true
+        type: string
+      responses:
+        200:
+          description: Catalog response
+          schema:
+            $ref: "#/definitions/CatalogItem"
+          headers:
+            last-modified:
+              type: string
+              description: The date/time that a pet was last modified
+      x-swagger-router-controller: GetCatalogItem
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  Catalog:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Catalog id
+      title:
+        type: string
+        description: Event or resource name
+      description:
+        type: string
+        description: Catalog long description
+      language:
+        type: string
+        description: Catalog language code
+      issued:
+        type: string
+        format: date-time
+        description: Date time when the file was created
+      modified:
+        type: string
+        format: date-time
+        description: Date time when the file was las modified
+      items:
+        $ref: "#/definitions/CatalogIdItems"
+  CatalogIdItems:
+    type: array
+    items:
+      type: string
+  CatalogItems:
+    type: array
+    items:
+        $ref: "#/definitions/CatalogItem"
+  CatalogItem:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Catalog item id
+      title:
+        type: string
+        description: Catalog item name
+      description:
+        type: string
+        description: Catalog long description
+      issued:
+        type: string
+        format: date-time
+        description: Date time when the file was created
+      modified:
+        type: string
+        format: date-time
+        description: Date time when the file was las modified
+      periodicity:
+        type: string
+        description: Frequency when the item is updated
+      formats:
+        $ref: "#/definitions/Formats"
+  Formats:
+    type: array
+    items:
+      $ref: "#/definitions/Format"
+  Format:
+    type: object
+    properties:
+      title:
+        type: string
+        description: Format name
+      url:
+        type: string
+        description: Url for fetching the data file
+      mediaType:
+        type: string
+        description: File media type
+      size:
+       type: integer
+       format: int64
+       description: File size represented in bytes
+      
+  
+      
+        
+        
+        
+        
