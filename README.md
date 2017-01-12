@@ -1,1 +1,1 @@
-# Skeleton project for Swagger
+# Madrid council open data
