@@ -53,11 +53,17 @@ paths:
       operationId: GetCatalogItems
       produces:
       - application/json
+      parameters:
+      - name: page
+        in: query
+        description: page number
+        required: false
+        type: string
       responses:
         200:
           description: Catalog response
           schema:
-            $ref: "#/definitions/CatalogItems"
+            $ref: "#/definitions/CatalogItemsResponse"
           headers:
             last-modified:
               type: string
@@ -167,6 +173,14 @@ definitions:
        type: integer
        format: int64
        description: File size represented in bytes
+  CatalogItemsResponse:
+    type: object
+    properties:
+      more:
+        type: boolean
+        description: Indicates if there are more items for retrieve
+      items: 
+        $ref: "#/definitions/CatalogItems"
       
   
       
