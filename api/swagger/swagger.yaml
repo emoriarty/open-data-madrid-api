@@ -59,6 +59,11 @@ paths:
         description: page number
         required: false
         type: string
+      - name: search
+        in: query
+        description: search word
+        required: false
+        type: string
       responses:
         200:
           description: Catalog response
