@@ -5,6 +5,7 @@ const Cors = require('cors');
 import dataFetcher from './api/helpers/data-fetcher';
 import xmlParser from './api/helpers/xml-parser';
 import storeParser from './api/helpers/store-parser';
+import Rx from 'rx';
 
 module.exports = app; // for testing
 
@@ -22,29 +23,52 @@ const keysMap = {
   'dcat:accessURL': 'url',
   'dcat:byteSize': 'size'
 };
+const catalogParserOptions = {
+  keysMap,
+  flattenPath: [
+    { path: 'catalog.items', fn: (obj) => obj.item },
+    { path: 'catalog.items.[].formats', fn: (obj) => obj.format }
+  ]
+};
 
-// Fetch from the first time the catalog
-dataFetcher.fetch(catalogUrl)
-  .then((result) => {
-    xmlParser.parse(result, {
-      keysMap,
-      flattenPath: [
-        { path: 'catalog.items', fn: (obj) => obj.item },
-        { path: 'catalog.items.[].formats', fn: (obj) => obj.format }
-      ]
-    })
-    .then((data) => {
-      const normalizedData = storeParser.normalize(data);
-      const parsedData = storeParser.parse(normalizedData);
-      console.log('Catalog fetched and parsed!');
+// Observables
+const intervalRequestStream = Rx.Observable
+  .interval(3600000)
+  .startWith(0)
+  .flatMap(
+    () => Rx.Observable.fromPromise(dataFetcher.fetch(catalogUrl))
+  );
+// const catalogRequestStream = Rx.Observable.fromPromise(
+//    dataFetcher.fetch(catalogUrl));
 
-      app.locals.data = {
-        catalog: parsedData.entities.catalogs['http://datos.madrid.es/egob/catalogo'],
-        catalogs: parsedData.entities.catalogs,
-        items: parsedData.entities.items
-      };
-    });
-  });
+// Observers
+const catalogRequestStreamOnNext = (data) => {
+  Rx.Observable.fromPromise(xmlParser.parse(data, catalogParserOptions))
+    .subscribe(
+      catalogParseOnNext,
+      (error) => console.error('Error parsing catalog', error),
+      () => console.log('Catalog parse completed')
+    );
+};
+
+const catalogParseOnNext = (data) => {
+  const normalizedData = storeParser.normalize(data);
+  const parsedData = storeParser.parse(normalizedData);
+
+  app.locals.data = {
+    catalog: parsedData.entities.catalogs['http://datos.madrid.es/egob/catalogo'],
+    catalogs: parsedData.entities.catalogs,
+    items: parsedData.entities.items
+  };
+};
+
+// Subscriptions
+intervalRequestStream
+  .subscribe(
+    catalogRequestStreamOnNext,
+    (error) => console.error('Error fetching catalog', error),
+    () => console.log('Catalog fetch completed')
+  );
 
 SwaggerExpress.create(config, (err, swaggerExpress) => {
   if (err) {

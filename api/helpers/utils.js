@@ -1,4 +1,5 @@
 import _ from 'lodash/fp';
+import { remove as removeDiacritics } from 'diacritics';
 
 const transform = _.transform.convert({ 'cap': false });
 
@@ -78,3 +79,39 @@ export const wrapInArray = (itemValue, itemPath, obj) => {
 
 export const arrayToObject = (array) =>
   _.keyBy((item) => _.indexOf(item, array), array);
+
+/**
+ * Sorting items by property
+ * The property must be a string
+ */
+export const sortByWithoutDiacritics = _.curry((propKey, items) =>
+  _.sortBy((item) => removeDiacritics(item[propKey]), _.values(items))
+);
+
+/**
+ * Filtering by property without diacritincs
+ * The property must be a string
+ */
+export const filterByWithoutDiacritics = _.curry((propKey, word, items) => {
+  if (!word) {
+    return items;
+  }
+  return _.filter(
+    (item) =>
+      _.startsWith(
+        removeDiacritics(word.toLowerCase()),
+        removeDiacritics(item[propKey].toLowerCase())
+      ),
+    items
+  );
+});
+
+/**
+ * pagerItems
+ */
+export const pagerItems = _.curry((page, inc, items) =>
+  _.slice(
+    page ? page * inc : 0,
+    page * inc + inc,
+    items)
+);
