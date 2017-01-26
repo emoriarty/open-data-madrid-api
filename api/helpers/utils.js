@@ -3,7 +3,8 @@ import { remove as removeDiacritics } from 'diacritics';
 
 const transform = _.transform.convert({ 'cap': false });
 
-export const splitLastCamelCased = _.curry((separator, str) => _.camelCase(_.last(_.split(separator)(str))));
+export const splitLastCamelCased = _.curry((separator, str) =>
+  _.camelCase(_.last(_.split(separator)(str))));
 
 export const mapIfArray = (fn, value) => {
   return _.isArray(value)
@@ -15,7 +16,8 @@ export const applyFnIfObject = _.curry((fn, value) => {
   return _.isObject(value) ? fn(value) : value;
 });
 
-export const omitByRegex = _.curry((regex, obj) => _.omitBy((val, key) => key.match(regex))(obj));
+export const omitByRegex = _.curry((regex, obj) =>
+  _.omitBy((val, key) => key.match(regex))(obj));
 
 /**
  * Use this function if an array property has an structure like this { items: [{ item: { id: 1 }}, { item: { id: 1 }}]}
@@ -50,7 +52,9 @@ export const changeKeysDeep = _.curry((fn, obj) =>
  */
 export const replaceKeysDeep = _.curry((keysMap, obj) =>
   transform((result, value, key) =>
-      (result[keysMap[key] || key] = mapIfArray(applyFnIfObject(replaceKeysDeep(keysMap)), value))
+    (result[keysMap[key] || key] = mapIfArray(
+      applyFnIfObject(replaceKeysDeep(keysMap)), value
+    ))
     , {})(obj));
 
 /**
@@ -114,4 +118,11 @@ export const pagerItems = _.curry((page, inc, items) =>
     page ? page * inc : 0,
     page * inc + inc,
     items)
+);
+
+/**
+ * Returns a new array with uniq values from the specified property
+ */
+export const uniqMapByProp = _.curry((propKey, items) =>
+  _.map(_.get(propKey), _.uniqBy(propKey, items))
 );

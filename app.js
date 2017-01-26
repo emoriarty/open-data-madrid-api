@@ -70,6 +70,7 @@ intervalRequestStream
     () => console.log('Catalog fetch completed')
   );
 
+// Main
 SwaggerExpress.create(config, (err, swaggerExpress) => {
   if (err) {
     throw err;
